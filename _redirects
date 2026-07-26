@@ -1,0 +1,6 @@
+# Proxies internos: el navegador conserva chimichurridiseno.com.
+/bienvenida      https://bienvenida-chimi.netlify.app/        200
+/bienvenida/*    https://bienvenida-chimi.netlify.app/:splat  200
+
+/formulario      https://chimichurriformulario.netlify.app/        200
+/formulario/*    https://chimichurriformulario.netlify.app/:splat  200
