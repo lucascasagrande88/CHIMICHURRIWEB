@@ -1,0 +1,17 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  X-Frame-Options: SAMEORIGIN
+
+/bienvenida
+  X-Robots-Tag: noindex, follow
+
+/bienvenida/*
+  X-Robots-Tag: noindex, follow
+
+/formulario
+  X-Robots-Tag: noindex, follow
+
+/formulario/*
+  X-Robots-Tag: noindex, follow
