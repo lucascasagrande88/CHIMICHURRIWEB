@@ -1,0 +1,81 @@
+/* ===========================================================================
+   Tour guiado (coach-marks) — Distribuidora del Valle DEMO
+   Resalta secciones de la web con popups secuenciales.
+   =========================================================================== */
+.dvt-mask{
+  position:fixed; inset:0; z-index:9000; cursor:default;
+  background:transparent; opacity:0; transition:opacity .25s ease;
+}
+.dvt-mask.dvt-show{ opacity:1; }
+
+/* Recuadro que "ilumina" el elemento apuntado (agujero en la oscuridad) */
+.dvt-hi{
+  position:fixed; z-index:9001; border-radius:16px; pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(9,22,15,.74), 0 0 0 3px rgba(255,255,255,.9),
+             0 12px 40px -8px rgba(0,0,0,.5);
+  transition:all .35s cubic-bezier(.4,.9,.3,1);
+}
+.dvt-hi.dvt-center{ box-shadow:0 0 0 9999px rgba(9,22,15,.8); }
+
+/* Tarjeta del popup */
+.dvt-pop{
+  position:fixed; z-index:9002; width:min(360px,calc(100vw - 32px));
+  background:#fff; color:#16281d; border-radius:18px; padding:20px 20px 16px;
+  box-shadow:0 24px 60px -16px rgba(0,0,0,.55); font-family:var(--dvt-body,Inter,system-ui,sans-serif);
+  opacity:0; transform:translateY(8px) scale(.98); transition:opacity .28s ease, transform .28s ease;
+}
+.dvt-pop.dvt-show{ opacity:1; transform:none; }
+.dvt-pop .dvt-badge{
+  display:inline-flex; align-items:center; gap:6px; font-weight:800; font-size:11.5px;
+  letter-spacing:.4px; text-transform:uppercase; color:#2c8a4a; background:#e9f7ee;
+  border-radius:999px; padding:5px 11px; margin-bottom:10px;
+}
+.dvt-pop h4{
+  margin:0 0 7px; font-family:var(--dvt-head,"Fraunces",Georgia,serif);
+  font-size:20px; line-height:1.15; color:#14261b; font-weight:700;
+}
+.dvt-pop p{ margin:0; font-size:14.5px; line-height:1.55; color:#41564a; font-weight:500; }
+.dvt-pop .dvt-foot{
+  display:flex; align-items:center; gap:10px; margin-top:16px;
+}
+.dvt-dots{ display:flex; gap:6px; margin-right:auto; }
+.dvt-dots i{ width:7px; height:7px; border-radius:50%; background:#d3e0d8; transition:all .2s; }
+.dvt-dots i.on{ background:#2c8a4a; width:20px; border-radius:6px; }
+.dvt-btn{
+  border:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:14px;
+  padding:10px 16px; border-radius:999px; transition:transform .12s, background .15s, box-shadow .15s;
+}
+.dvt-btn:active{ transform:translateY(1px); }
+.dvt-next{ background:linear-gradient(180deg,#3fb15f,#2c8a4a); color:#fff; box-shadow:0 6px 0 -2px #1f6c39; }
+.dvt-next:hover{ box-shadow:0 8px 0 -2px #1f6c39; }
+.dvt-back{ background:#eef3ef; color:#3a4d42; }
+.dvt-back:hover{ background:#e3ebe5; }
+.dvt-skip{
+  position:absolute; top:14px; right:14px; background:none; border:none; cursor:pointer;
+  color:#9aa8a0; font-size:20px; line-height:1; padding:4px; border-radius:8px;
+}
+.dvt-skip:hover{ color:#54655b; background:#f1f5f2; }
+
+/* Flechita del popup hacia el elemento */
+.dvt-arrow{ position:fixed; z-index:9002; width:16px; height:16px; background:#fff; transform:rotate(45deg);
+  box-shadow:0 0 0 rgba(0,0,0,0); transition:all .3s; }
+
+/* Botón flotante "Tutorial" */
+.dvt-fab{
+  position:fixed; z-index:70; left:20px; bottom:22px;
+  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+  background:#fff; color:#1f6c39; border:2px solid #cfe6d6; border-radius:999px;
+  font-family:var(--dvt-head,"Fraunces",serif); font-weight:700; font-size:14px;
+  padding:11px 16px; box-shadow:0 12px 28px -12px rgba(0,0,0,.4); transition:transform .15s, box-shadow .15s;
+}
+.dvt-fab:hover{ transform:translateY(-2px); box-shadow:0 16px 32px -12px rgba(0,0,0,.45); }
+.dvt-fab svg{ width:18px; height:18px; }
+
+@media (max-width:640px){
+  .dvt-pop{ left:16px !important; right:16px !important; width:auto; bottom:16px !important; top:auto !important; }
+  .dvt-arrow{ display:none; }
+  .dvt-fab{ left:14px; bottom:88px; font-size:13px; padding:9px 13px; }
+}
+@media (prefers-reduced-motion:reduce){
+  .dvt-hi,.dvt-pop,.dvt-arrow{ transition:none; }
+}

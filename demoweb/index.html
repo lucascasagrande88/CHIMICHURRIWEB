@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribuidora del Valle — Alimentos y bebidas para tu comercio</title>
+<meta name="description" content="Demo interactivo de tienda mayorista + panel de gestión. Hecho por Chimichurri.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="tour.css?v=1">
+</head>
+<body>
+
+<!-- ============ RIBBON DEMO ============ -->
+<div class="demobar">
+  <div class="wrap">
+    <b>🎬 Demo interactivo</b>
+    <span class="chip">Distribuidora del Valle</span>
+    <span style="opacity:.85">Probá la tienda <b>y</b> el panel de gestión — todo funciona.</span>
+    <div class="db-actions">
+      <button type="button" class="db-tour" id="startTour">▶ Ver tutorial guiado</button>
+      <a href="catalogo.html">📋 Ver catálogo ↗</a>
+      <a href="admin.html" id="panelLink">🔐 Entrar al panel (CRM) ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="header" id="header">
+  <nav class="nav">
+    <a href="#inicio" class="brand">
+      <svg class="logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="3" y="14" width="42" height="30" rx="7" fill="#2c8a4a"/>
+        <path d="M3 21c0-3.9 3.1-7 7-7h28c3.9 0 7 3.1 7 7v2H3v-2Z" fill="#1c6d3d"/>
+        <path d="M24 4c-5 2-8 6-8 10 4 0 8-3 8-10Z" fill="#3fb15f"/>
+        <path d="M24 4c5 2 8 6 8 10-4 0-8-3-8-10Z" fill="#7bd85a"/>
+        <circle cx="16" cy="30" r="3.4" fill="#ffbe45"/><circle cx="24" cy="34" r="3.4" fill="#ff6a52"/><circle cx="32" cy="30" r="3.4" fill="#ffe6b3"/>
+      </svg>
+      <span>Distribuidora del Valle<small>Alimentos & bebidas · Mayorista</small></span>
+    </a>
+    <div class="menu">
+      <a href="#inicio" class="active">Inicio</a>
+      <a href="#categorias">Categorías</a>
+      <a href="#productos">Productos</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="#servicios">Cómo trabajamos</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <div class="nav-tools">
+      <button class="icon-btn" id="searchBtn" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+      </button>
+      <button class="icon-btn" id="cartBtn" aria-label="Carrito">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.6"/><circle cx="18" cy="21" r="1.6"/><path d="M2 3h3l2.4 12.3a2 2 0 0 0 2 1.7h8.2a2 2 0 0 0 2-1.6L23 7H6"/></svg>
+        <span class="cart-count" id="cartCount" style="display:none">0</span>
+      </button>
+      <a href="#" class="btn btn-green btn-sm js-wa" data-wa="¡Hola! Quiero hacer un pedido mayorista."><svg class="wa-ico" viewBox="0 0 32 32" fill="currentColor"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.6 1.9 6.5L4 29l7.7-1.8c1.8 1 3.9 1.6 6.1 1.6h.2c6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4 .9.9-3.9-.3-.4A9.8 9.8 0 0 1 6.2 15C6.2 9.6 10.6 5.2 16 5.2S25.8 9.6 25.8 15 21.4 24.8 16 24.8z"/></svg>Pedir por WhatsApp</a>
+      <button class="icon-btn hamb" id="hambBtn" aria-label="Menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile drawer -->
+<div class="drawer" id="drawer">
+  <div class="scrim" data-close></div>
+  <div class="panel">
+    <button class="close" data-close aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <a href="#inicio" data-close>Inicio</a>
+    <a href="#categorias" data-close>Categorías</a>
+    <a href="#productos" data-close>Productos</a>
+    <a href="catalogo.html" data-close>Catálogo</a>
+    <a href="#servicios" data-close>Cómo trabajamos</a>
+    <a href="#nosotros" data-close>Nosotros</a>
+    <a href="#contacto" data-close>Contacto</a>
+    <a href="admin.html" data-close>🔐 Panel (CRM)</a>
+    <a href="#" class="btn btn-green js-wa" data-wa="¡Hola! Quiero hacer un pedido." style="margin-top:10px">Pedir por WhatsApp</a>
+  </div>
+</div>
+
+<!-- Cart drawer -->
+<div class="drawer cart-drawer" id="cartDrawer">
+  <div class="scrim" data-close></div>
+  <div class="panel">
+    <div class="cart-head">
+      <h3>Tu pedido</h3>
+      <button class="close" data-close aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-empty" id="cartEmpty">
+      <div style="font-size:56px">🛒</div>
+      <p>Tu pedido está vacío.<br>Agregá productos del catálogo.</p>
+      <a href="#productos" class="btn btn-green" data-close>Ver productos</a>
+    </div>
+    <div class="cart-foot" id="cartFoot" style="display:none">
+      <div class="cart-total"><span>Total</span><b id="cartTotal">$0</b></div>
+      <button type="button" class="btn btn-green btn-lg" id="checkoutBtn">Enviar pedido por WhatsApp</button>
+      <button type="button" class="cart-clear" id="clearCartBtn">Vaciar pedido</button>
+      <p class="cart-note" id="minNote"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="inicio">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy reveal">
+        <span class="eyebrow"><span class="dot">★</span> Tu proveedor mayorista de confianza</span>
+        <h1>Todo para tu comercio,<br><span class="amber">al mejor precio</span><br>y <span class="tomato">en un solo lugar</span></h1>
+        <p class="sub">Almacén, bebidas, lácteos, fiambres, congelados y limpieza. Abastecé tu negocio con <b>entrega propia y precios mayoristas.</b></p>
+        <div class="hero-cta">
+          <a href="#productos" class="btn btn-green btn-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.6"/><circle cx="18" cy="21" r="1.6"/><path d="M2 3h3l2.4 12.3a2 2 0 0 0 2 1.7h8.2a2 2 0 0 0 2-1.6L23 7H6"/></svg>
+            Ver catálogo</a>
+          <a href="#" class="btn btn-white btn-lg js-wa" data-wa="¡Hola! Quiero recibir la lista de precios mayorista."><svg class="wa-ico" viewBox="0 0 32 32" fill="#2c8a4a"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.6 1.9 6.5L4 29l7.7-1.8c1.8 1 3.9 1.6 6.1 1.6h.2c6.6 0 12-5.4 12-12S22.6 3 16 3z"/></svg>Pedir lista de precios</a>
+        </div>
+        <div class="benefits">
+          <div class="benefit"><span class="bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1zM14 8h4l3 3v4h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="18" cy="18" r="1.8"/></svg></span>Reparto<br>propio</div>
+          <div class="benefit"><span class="bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Entrega<br>24–48 h</div>
+          <div class="benefit"><span class="bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5Z"/><path d="m9 12 2 2 4-4"/></svg></span>Precios<br>mayoristas</div>
+        </div>
+      </div>
+      <div class="hero-art reveal">
+        <div class="hero-plate">
+          <div class="ring"></div>
+          <span class="em" style="left:20%;top:22%">🥫</span>
+          <span class="em" style="right:18%;top:18%">🥤</span>
+          <span class="em" style="left:16%;bottom:20%">🧀</span>
+          <span class="em" style="right:16%;bottom:22%">🍞</span>
+          <span class="em" style="left:44%;top:44%">🧉</span>
+        </div>
+        <div class="hero-badge hb1"><span class="hb-ic" style="background:#e9f7ee">📦</span><div><b>+1.200</b><span>productos</span></div></div>
+        <div class="hero-badge hb2"><span class="hb-ic" style="background:#fff0d6">🚚</span><div><b>Reparto</b><span>zona sur</span></div></div>
+      </div>
+    </div>
+
+    <!-- Quick cards -->
+    <div class="quick">
+      <a href="#productos" class="qcard q-green" data-jump="almacen"><h3>Almacén</h3><p>Arroz, fideos, aceite, conservas y más.</p><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="em">🥫</span></a>
+      <a href="#productos" class="qcard q-amber" data-jump="bebidas"><h3>Bebidas</h3><p>Gaseosas, aguas, vinos y cervezas.</p><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="em">🥤</span></a>
+      <a href="#productos" class="qcard q-cyan" data-jump="lacteos"><h3>Lácteos y fiambres</h3><p>Leche, quesos, fiambres y embutidos.</p><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="em">🧀</span></a>
+      <a href="#productos" class="qcard q-berry" data-jump="limpieza"><h3>Limpieza</h3><p>Higiene y limpieza para tu negocio.</p><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="em">🧴</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATEGORÍAS ============ -->
+<section class="band" id="categorias">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Nuestro surtido</span>
+      <h2>Explorá todas las categorías</h2>
+      <p>Todo lo que tu comercio necesita para reponer, <b>en un mismo pedido.</b></p>
+    </div>
+    <div class="tabs" id="catTabs"></div>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+</section>
+
+<!-- ============ PRODUCTOS ============ -->
+<section class="band tight" id="productos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Catálogo</span>
+      <h2>Armá tu pedido</h2>
+      <p>Sumá productos al carrito y <b>cerrás el pedido por WhatsApp.</b></p>
+    </div>
+    <div class="shop-bar">
+      <label class="shop-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><input type="search" id="shopSearch" placeholder="Buscar producto…" autocomplete="off"></label>
+      <select id="shopSort" aria-label="Ordenar">
+        <option value="az">Nombre A–Z</option>
+        <option value="price-asc">Precio: menor a mayor</option>
+        <option value="price-desc">Precio: mayor a menor</option>
+      </select>
+    </div>
+    <div class="shop-cats" id="shopCats"></div>
+    <div class="shop-count" id="shopCount"></div>
+    <div class="prod-grid" id="prodGrid"></div>
+    <div class="shop-empty" id="shopEmpty" style="display:none"><b>No encontramos productos</b><span>Probá con otra búsqueda o categoría.</span></div>
+    <div class="shop-more" id="shopMore" style="display:none"><button type="button" class="btn btn-white btn-lg" id="loadMore">Ver más productos</button></div>
+  </div>
+</section>
+
+<!-- ============ SERVICIOS ============ -->
+<section class="band" id="servicios">
+  <div class="svc-band reveal">
+    <div class="svc-wrap">
+      <div class="svc-head">
+        <span class="kicker">Cómo trabajamos</span>
+        <h2>Pensado para el comerciante</h2>
+        <p>Más que vender cajas: te ayudamos a que nunca te falte mercadería, con la logística resuelta.</p>
+      </div>
+      <div class="svc-grid">
+        <article class="svc"><span class="svc-ic sv-amber">🚚</span><h4>Reparto propio</h4><p>Entregamos en tu comercio en 24–48 h, sin costo desde el pedido mínimo.</p></article>
+        <article class="svc"><span class="svc-ic sv-cyan">🧾</span><h4>Cuenta corriente</h4><p>Comprás hoy y organizás tus pagos. Condiciones a medida de tu negocio.</p></article>
+        <article class="svc"><span class="svc-ic sv-tomato">🏷️</span><h4>Precios mayoristas</h4><p>Escalonados por volumen: cuanto más llevás, mejor el precio.</p></article>
+        <article class="svc"><span class="svc-ic sv-lime">💬</span><h4>Atención directa</h4><p>Un vendedor que te conoce y te avisa ofertas y novedades por WhatsApp.</p></article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NOSOTROS ============ -->
+<section class="band" id="nosotros">
+  <div class="wrap">
+    <div class="about-top">
+      <div class="reveal">
+        <span class="eyebrow"><span class="dot">♥</span> Nosotros</span>
+        <h2>Tu socio para abastecer, desde hace más de 20 años</h2>
+        <p class="lead">Somos una distribuidora mayorista de alimentos y bebidas. Le llevamos mercadería a almacenes, kioscos, minimercados y comercios de gastronomía, con <b>stock, precios y una entrega en la que podés confiar.</b></p>
+        <div class="hero-cta" style="margin-top:22px">
+          <a href="#productos" class="btn btn-green">Ver catálogo</a>
+          <a href="#" class="btn btn-white js-wa" data-wa="¡Hola! Quiero abrir una cuenta como comercio.">Quiero ser cliente</a>
+        </div>
+      </div>
+      <div class="about-shot reveal">
+        <div class="grid-em">
+          <span>🥫</span><span>🥤</span><span>🧀</span>
+          <span>🍞</span><span>🧉</span><span>🧴</span>
+          <span>🍫</span><span>🧊</span><span>🥓</span>
+        </div>
+      </div>
+    </div>
+    <div class="about-blocks">
+      <div class="ablock a-green reveal"><span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12H3zM3 7l3-3h12l3 3"/><path d="M9 12h6"/></svg></span><h4>Amplio stock</h4><p>Más de 1.200 productos de las marcas que tus clientes piden.</p></div>
+      <div class="ablock a-amber reveal"><span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1zM14 8h4l3 3v4h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="18" cy="18" r="1.8"/></svg></span><h4>Logística propia</h4><p>Camiones y depósito propios para entregar rápido y prolijo.</p></div>
+      <div class="ablock a-cyan reveal"><span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5Z"/><path d="m9 12 2 2 4-4"/></svg></span><h4>Frío garantizado</h4><p>Cadena de frío cuidada para lácteos, fiambres y congelados.</p></div>
+      <div class="ablock a-tomato reveal"><span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-4-1L3 20l1.1-4a8.4 8.4 0 1 1 16.9-4.5Z"/></svg></span><h4>Atención cercana</h4><p>Te asesoramos y resolvemos tu pedido por WhatsApp.</p></div>
+    </div>
+    <div class="stats">
+      <div class="stat reveal"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14"/><path d="M4 19h16M8 7h8M8 11h6"/></svg></span><div><b>+1.200</b><span>productos</span></div></div>
+      <div class="stat reveal"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12H3zM3 7l3-3h12l3 3"/></svg></span><div><b>+800</b><span>comercios</span></div></div>
+      <div class="stat reveal"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1zM14 8h4l3 3v4h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="18" cy="18" r="1.8"/></svg></span><div><b>24–48 h</b><span>entrega</span></div></div>
+      <div class="stat reveal"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>20 años</b><span>en el rubro</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIOS + FAQ ============ -->
+<section class="band tight" id="testimonios">
+  <div class="wrap">
+    <div class="tf-grid">
+      <div class="reveal">
+        <h2>Lo que dicen los comercios</h2>
+        <div class="testi-grid">
+          <article class="testi"><span class="tag">Almacén</span><div class="stars">★★★★★</div><p class="txt">"Me entregan al otro día y siempre tienen stock. Dejé de perder ventas por faltantes."</p><div class="who"><span class="av">🏪</span><div><div class="nm">Marcelo — Almacén</div><div class="role">Cliente hace 6 años</div></div></div></article>
+          <article class="testi"><span class="tag">Kiosco</span><div class="stars">★★★★★</div><p class="txt">"Los precios mayoristas me dejan buen margen y el vendedor me avisa las promos. Muy recomendable."</p><div class="who"><span class="av">🍬</span><div><div class="nm">Lucía — Kiosco</div><div class="role">Cliente hace 3 años</div></div></div></article>
+          <article class="testi"><span class="tag">Minimercado</span><div class="stars">★★★★★</div><p class="txt">"Pido todo por WhatsApp en 5 minutos. La cuenta corriente me ordena los pagos del mes."</p><div class="who"><span class="av">🛒</span><div><div class="nm">Diego — Minimercado</div><div class="role">Cliente hace 4 años</div></div></div></article>
+        </div>
+      </div>
+      <div class="reveal">
+        <h2>Preguntas frecuentes</h2>
+        <div class="faq-list" id="faqList">
+          <div class="faq"><button class="q"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12H3zM3 7l3-3h12l3 3"/></svg></span><h4>¿Cuál es el pedido mínimo?</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="a"><p>El pedido mínimo mayorista es de $30.000. Por encima de ese monto, el reparto en zona es sin cargo.</p></div></div>
+          <div class="faq"><button class="q"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1zM14 8h4l3 3v4h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="18" cy="18" r="1.8"/></svg></span><h4>¿En cuánto tiempo entregan?</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="a"><p>Entre 24 y 48 h hábiles según la zona. Coordinamos el día de reparto por WhatsApp.</p></div></div>
+          <div class="faq"><button class="q"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><h4>¿Qué medios de pago aceptan?</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="a"><p>Efectivo, transferencia y cuenta corriente para clientes habituales. También billeteras virtuales.</p></div></div>
+          <div class="faq"><button class="q"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-4-1L3 20l1.1-4a8.4 8.4 0 1 1 16.9-4.5Z"/></svg></span><h4>¿Cómo hago mi primer pedido?</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="a"><p>Armás el carrito acá y lo enviás por WhatsApp. Te confirmamos stock, total y día de entrega.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACTO ============ -->
+<section class="band" id="contacto">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Contacto</span>
+      <h2>Pedí tu lista de precios</h2>
+      <p>Escribinos y en el día te contactamos. <b>Sin vueltas.</b></p>
+    </div>
+    <div class="contact-grid">
+      <div class="cbox reveal">
+        <h3>Datos de contacto</h3>
+        <div class="cinfo">
+          <a class="cline js-wa" data-wa="¡Hola! Quiero hacer una consulta." href="#"><span class="ci ci-wa"><svg viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.6 1.9 6.5L4 29l7.7-1.8c1.8 1 3.9 1.6 6.1 1.6h.2c6.6 0 12-5.4 12-12S22.6 3 16 3z"/></svg></span><div><b>WhatsApp</b><span id="waPretty">+54 9 11 0000-0000</span></div></a>
+          <div class="cline"><span class="ci ci-green"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg></span><div><b>Email</b><span id="emailTxt">ventas@distribuidoradelvalle.com</span></div></div>
+          <div class="cline"><span class="ci ci-amber"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Horario</b><span id="hoursTxt">Lun a Vie 8–18 h · Sáb 8–13 h</span></div></div>
+          <div class="cline"><span class="ci ci-tomato"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><div><b>Depósito</b><span id="addrTxt">Parque Industrial, Nave 12 · Zona Sur</span></div></div>
+        </div>
+      </div>
+
+      <div class="map">
+        <span class="road r1"></span><span class="road r2"></span>
+        <span class="park p1"></span><span class="park p2"></span>
+        <span class="pin"><svg viewBox="0 0 24 24" fill="#2c8a4a" stroke="#fff" stroke-width="1.5"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Z"/><circle cx="12" cy="9" r="2.6" fill="#fff"/></svg></span>
+        <div class="mcard"><span class="mi"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.4"/></svg></span><div><b>Distribuidora del Valle</b><span>Parque Industrial, Nave 12 · Zona Sur</span></div></div>
+      </div>
+
+      <div class="cbox reveal">
+        <h3>Escribinos</h3>
+        <form id="contactForm">
+          <div class="form-field"><input type="text" name="nombre" placeholder="Nombre y comercio" required></div>
+          <div class="form-field"><input type="tel" name="tel" placeholder="Teléfono / WhatsApp" required></div>
+          <div class="form-field"><input type="email" name="email" placeholder="Email (opcional)"></div>
+          <div class="form-field"><textarea name="msg" placeholder="¿Qué necesitás? Contanos tu rubro y tu pedido…" required></textarea></div>
+          <button type="submit" class="btn btn-green btn-lg" style="width:100%">Enviar consulta</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="contact-cta">
+      <div class="lt"><span class="wa-big"><svg viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.6 1.9 6.5L4 29l7.7-1.8c1.8 1 3.9 1.6 6.1 1.6h.2c6.6 0 12-5.4 12-12S22.6 3 16 3z"/></svg></span><div><h3>¿Preferís escribirnos por WhatsApp?</h3><p>Atención directa, sin esperas.</p></div></div>
+      <a href="#" class="btn btn-white btn-lg js-wa" data-wa="¡Hola! Quiero hacer un pedido mayorista.">Chatear ahora</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#inicio" class="brand"><svg class="logo" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="3" y="14" width="42" height="30" rx="7" fill="#3fb15f"/><path d="M24 4c-5 2-8 6-8 10 4 0 8-3 8-10Z" fill="#7bd85a"/><path d="M24 4c5 2 8 6 8 10-4 0-8-3-8-10Z" fill="#a9e884"/><circle cx="16" cy="30" r="3.4" fill="#ffbe45"/><circle cx="24" cy="34" r="3.4" fill="#ff6a52"/><circle cx="32" cy="30" r="3.4" fill="#ffe6b3"/></svg><span style="color:#fff">Distribuidora del Valle</span></a>
+        <p>Alimentos y bebidas para tu comercio. Stock, precios mayoristas y reparto propio. 🥫🥤🧀</p>
+      </div>
+      <div class="foot-col">
+        <h5>Catálogo</h5>
+        <a href="#productos">Almacén</a><a href="#productos">Bebidas</a><a href="#productos">Lácteos y fiambres</a><a href="#productos">Limpieza</a>
+      </div>
+      <div class="foot-col">
+        <h5>Distribuidora</h5>
+        <a href="#servicios">Cómo trabajamos</a><a href="#nosotros">Nosotros</a><a href="#testimonios">Testimonios</a><a href="#contacto">Contacto</a>
+      </div>
+      <div class="foot-col">
+        <h5>Seguinos</h5>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V5h-3c-2.2 0-4 1.8-4 4v2H7v4h3v6h4v-6h3l1-4h-4V9c0-.6.4-1 1-1Z"/></svg></a>
+        </div>
+        <div style="margin-top:16px"><a href="admin.html" style="color:#ffe6b3;font-weight:800">🔐 Panel de gestión (CRM)</a></div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© 2026 Distribuidora del Valle · Demo. Marca y productos ficticios.</p>
+      <p class="made-by">Hecho con <span class="heart">♥</span> por <a href="https://www.chimichurridiseno.com" target="_blank" rel="noopener">Chimichurri</a></p>
+    </div>
+  </div>
+</footer>
+
+<a href="#" class="fab js-wa" data-wa="¡Hola! Quiero hacer un pedido mayorista." aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+
+<div class="toast" id="toast"><span class="tk"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7 9 18l-5-5"/></svg></span><b id="toastMsg">Agregado al pedido</b></div>
+
+<script src="config.js?v=1"></script>
+<script src="products-data.js?v=1"></script>
+<script src="store.js?v=1"></script>
+<script src="tour.js?v=1"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>

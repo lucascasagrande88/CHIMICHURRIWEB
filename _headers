@@ -15,3 +15,9 @@
 
 /formulario/*
   X-Robots-Tag: noindex, follow
+
+/demoweb
+  X-Robots-Tag: noindex, follow
+
+/demoweb/*
+  X-Robots-Tag: noindex, follow
