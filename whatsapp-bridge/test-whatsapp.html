@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CHIMI WhatsApp Bridge</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:720px;margin:40px auto;padding:0 18px;background:#111;color:#f5f5f5}
+    h1{font-size:28px;margin-bottom:8px} p{color:#bbb}
+    label{display:block;margin:18px 0 6px;font-weight:700}
+    input,textarea,button{box-sizing:border-box;width:100%;font:inherit;border-radius:10px;border:1px solid #444;padding:12px;background:#1b1b1b;color:#fff}
+    textarea{min-height:140px;resize:vertical}
+    button{margin-top:18px;background:#fff;color:#111;font-weight:800;cursor:pointer}
+    pre{white-space:pre-wrap;background:#1b1b1b;padding:14px;border-radius:10px;border:1px solid #333;min-height:50px}
+    .ok{color:#67e480}.bad{color:#ff7b7b}.row{display:flex;gap:10px}.row>*{flex:1}
+  </style>
+</head>
+<body>
+  <h1>🤖 CHIMI WhatsApp Bridge</h1>
+  <p>Prueba segura de salida vía Twilio. Ninguna credencial está hardcodeada.</p>
+
+  <div class="row">
+    <button id="health" type="button">Chequear bridge</button>
+    <button id="send" type="button">Mandar WhatsApp</button>
+  </div>
+
+  <label for="agent">Agente</label>
+  <input id="agent" value="SALES">
+
+  <label for="message">Mensaje</label>
+  <textarea id="message">Prueba de salida desde CHIMI ✅</textarea>
+
+  <label for="token">CHIMI_BRIDGE_TOKEN</label>
+  <input id="token" type="password" autocomplete="off" placeholder="Pegá tu token acá">
+
+  <label>Respuesta</label>
+  <pre id="out">Listo para probar.</pre>
+
+<script>
+const out = document.getElementById("out");
+
+function show(data, ok) {
+  out.className = ok ? "ok" : "bad";
+  out.textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+}
+
+document.getElementById("health").addEventListener("click", async () => {
+  show("Chequeando...", true);
+  try {
+    const r = await fetch("/api/health");
+    const data = await r.json();
+    show(data, r.ok);
+  } catch (e) {
+    show(String(e), false);
+  }
+});
+
+document.getElementById("send").addEventListener("click", async () => {
+  const token = document.getElementById("token").value.trim();
+  const agent = document.getElementById("agent").value.trim();
+  const message = document.getElementById("message").value.trim();
+
+  if (!token || !message) {
+    return show("Falta token o mensaje.", false);
+  }
+
+  show("Enviando...", true);
+
+  try {
+    const r = await fetch("/api/send-whatsapp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CHIMI-TOKEN": token
+      },
+      body: JSON.stringify({ agent, message })
+    });
+
+    const data = await r.json();
+    show(data, r.ok);
+  } catch (e) {
+    show(String(e), false);
+  }
+});
+</script>
+</body>
+</html>
