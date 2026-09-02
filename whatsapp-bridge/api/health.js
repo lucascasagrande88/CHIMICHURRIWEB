@@ -18,6 +18,12 @@ module.exports = async function handler(req, res) {
   return res.status(ok ? 200 : 500).json({
     ok,
     service: "CHIMI WhatsApp Bridge",
+    version: "owner-agent-channel-v1",
+    features: {
+      canonical_agent_headers: true,
+      agent_runtime_auth: true,
+      delegated_agent_identities: true
+    },
     env
   });
 };
