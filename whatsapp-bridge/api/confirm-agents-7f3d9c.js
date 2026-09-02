@@ -1,17 +1,11 @@
-const crypto = require("crypto");
 const { IDENTITIES, formatAgentMessage } = require("../lib/agent-identities");
 
-const KEY_HASH = "1d6a9e5ffa1c2a5a5b71c71fb2a049f42e6ee7e407654bd6b0ccb9e3b95ea327";
-const EXPIRES_AT = Date.parse("2026-09-02T02:50:00Z");
+const EXPIRES_AT = Date.parse("2026-09-02T02:40:00Z");
 
 function normalizeWhatsAppAddress(value) {
   const v = String(value || "").trim();
   if (!v) return "";
   return v.startsWith("whatsapp:") ? v : `whatsapp:${v}`;
-}
-
-function sha256(value) {
-  return crypto.createHash("sha256").update(String(value || "")).digest("hex");
 }
 
 function sleep(ms) {
@@ -53,10 +47,6 @@ module.exports = async function handler(req, res) {
 
   if (Date.now() > EXPIRES_AT) {
     return res.status(410).json({ ok: false, error: "Confirmation endpoint expired" });
-  }
-
-  if (sha256(req.query?.key) !== KEY_HASH) {
-    return res.status(401).json({ ok: false, error: "Unauthorized" });
   }
 
   const {
