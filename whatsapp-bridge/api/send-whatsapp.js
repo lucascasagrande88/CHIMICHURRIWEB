@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { formatAgentMessage } = require("../lib/agent-identities");
 
 function safeEqual(a, b) {
   const aa = Buffer.from(String(a || ""));
@@ -48,7 +49,7 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const agent = String(req.body?.agent || "CHIMI").trim().slice(0, 40);
+  const agent = String(req.body?.agent || "CHIMI").trim().slice(0, 80);
   const message = String(req.body?.message || "").trim().slice(0, 4000);
 
   if (!message) {
@@ -57,12 +58,12 @@ module.exports = async function handler(req, res) {
 
   const from = normalizeWhatsAppAddress(TWILIO_WHATSAPP_FROM);
   const to = normalizeWhatsAppAddress(CHIMI_WHATSAPP_TO);
-  const finalBody = `🤖 CHIMI · ${agent}\n\n${message}`;
+  const formatted = formatAgentMessage(agent, message);
 
   const form = new URLSearchParams({
     From: from,
     To: to,
-    Body: finalBody
+    Body: formatted.body
   });
 
   const auth = Buffer.from(
@@ -103,7 +104,9 @@ module.exports = async function handler(req, res) {
       ok: true,
       sid: data.sid,
       status: data.status,
-      to: data.to
+      to: data.to,
+      agent: formatted.identity.key,
+      display: `${formatted.identity.color} ${formatted.identity.emoji} ${formatted.identity.name}`
     });
   } catch (error) {
     console.error("Outbound bridge failure", error);
