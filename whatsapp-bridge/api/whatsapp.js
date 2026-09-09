@@ -56,6 +56,12 @@ function routeAgent(text) {
   return "0_ORCHESTRATOR_CORE";
 }
 
+function selectModel(text) {
+  const s = String(text || "").toLowerCase();
+  const deep = /\b(profundo|profundiz|detalle|detallado|analiz|estrategia|diagn[oó]stico|plan completo)\b/.test(s);
+  return deep ? "gpt-5.6-terra" : "gpt-5.6-luna";
+}
+
 function extractOutputText(data) {
   if (!data || !Array.isArray(data.output)) return "";
   const parts = [];
@@ -71,6 +77,7 @@ function extractOutputText(data) {
 async function getContext({ token, agent, message, from, messageSid }) {
   const r = await fetch(CONTEXT_URL, {
     method: "POST",
+    signal: AbortSignal.timeout(7000),
     headers: {
       "Content-Type": "application/json",
       "X-CHIMI-TOKEN": token
@@ -84,7 +91,12 @@ async function getContext({ token, agent, message, from, messageSid }) {
     })
   });
 
-  if (!r.ok) throw new Error(`CONTEXT_${r.status}`);
+  if (!r.ok) {
+    const error = new Error(`CONTEXT_${r.status}`);
+    error.stage = "context";
+    error.status = r.status;
+    throw error;
+  }
   return await r.json();
 }
 
@@ -92,6 +104,7 @@ async function recordOutbound({ token, agent, message }) {
   try {
     await fetch(CONTEXT_URL, {
       method: "POST",
+      signal: AbortSignal.timeout(5000),
       headers: {
         "Content-Type": "application/json",
         "X-CHIMI-TOKEN": token
@@ -109,6 +122,7 @@ async function recordOutbound({ token, agent, message }) {
 
 async function askOpenAI({ apiKey, agent, userText, context }) {
   const guidance = ROLE_GUIDANCE[agent] || ROLE_GUIDANCE["0_ORCHESTRATOR_CORE"];
+  const model = selectModel(userText);
 
   const instructions = [
     guidance,
@@ -132,32 +146,38 @@ async function askOpenAI({ apiKey, agent, userText, context }) {
 
   const r = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
+    signal: AbortSignal.timeout(10000),
     headers: {
       "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: "gpt-5.6-terra",
+      model,
+      reasoning: { effort: "none" },
       instructions,
       input,
-      max_output_tokens: 650
+      max_output_tokens: 500
     })
   });
 
   const data = await r.json().catch(() => ({}));
 
   if (!r.ok) {
-    console.error("OpenAI response error", {
-      status: r.status,
-      type: data?.error?.type,
-      code: data?.error?.code
-    });
-    throw new Error(`OPENAI_${r.status}`);
+    const error = new Error(`OPENAI_${r.status}`);
+    error.stage = "openai";
+    error.status = r.status;
+    error.apiCode = data?.error?.code || null;
+    error.apiType = data?.error?.type || null;
+    throw error;
   }
 
   const text = extractOutputText(data);
-  if (!text) throw new Error("OPENAI_EMPTY");
-  return text;
+  if (!text) {
+    const error = new Error("OPENAI_EMPTY");
+    error.stage = "openai";
+    throw error;
+  }
+  return { text, model };
 }
 
 function twimlMessage(text) {
@@ -167,6 +187,22 @@ function twimlMessage(text) {
     escapeXml(text) +
     "</Message></Response>"
   );
+}
+
+function friendlyRuntimeError(error) {
+  if (error?.apiCode === "credit_balance_exhausted" || error?.apiType === "insufficient_quota") {
+    return "El bridge y mi contexto están OK, pero la API de OpenAI se quedó sin saldo. Cargá crédito en Platform Billing y este mismo mensaje va a responder con IA sin tocar nada más.";
+  }
+  if (error?.status === 401 && error?.stage === "openai") {
+    return "El bridge y mi contexto están OK, pero la API key de OpenAI fue rechazada. Hay que revisar OPENAI_API_KEY en Vercel.";
+  }
+  if (error?.stage === "context") {
+    return "Recibí tu mensaje, pero no pude leer el contexto vivo del agente. No voy a inventarte un reporte sin evidencia.";
+  }
+  if (error?.name === "TimeoutError" || error?.name === "AbortError") {
+    return "Recibí tu mensaje, pero el runtime tardó demasiado. Probá de nuevo en unos segundos.";
+  }
+  return "Recibí tu mensaje, pero falló el runtime de respuesta. El comando quedó registrado para el agente. Probá de nuevo en unos segundos.";
 }
 
 module.exports = async function handler(req, res) {
@@ -202,7 +238,6 @@ module.exports = async function handler(req, res) {
 
   console.log("Inbound owner WhatsApp", {
     agent,
-    from,
     messageSid,
     bodyPreview: body.slice(0, 140),
     aiConfigured: Boolean(openaiKey)
@@ -217,7 +252,7 @@ module.exports = async function handler(req, res) {
   if (!openaiKey) {
     const formatted = formatAgentMessage(
       agent,
-      "Recibí tu mensaje. El routing ya funciona, pero falta cargar OPENAI_API_KEY en Vercel para que pueda responderte con IA."
+      "Recibí tu mensaje. El routing funciona, pero falta cargar OPENAI_API_KEY en Vercel para que pueda responderte con IA."
     );
     res.setHeader("Content-Type", "text/xml; charset=utf-8");
     return res.status(200).send(twimlMessage(formatted.body));
@@ -232,7 +267,7 @@ module.exports = async function handler(req, res) {
       messageSid
     });
 
-    const aiText = await askOpenAI({
+    const answer = await askOpenAI({
       apiKey: openaiKey,
       agent,
       userText: body,
@@ -242,19 +277,28 @@ module.exports = async function handler(req, res) {
     await recordOutbound({
       token: bridgeToken,
       agent,
-      message: aiText
+      message: answer.text
     });
 
-    const formatted = formatAgentMessage(agent, aiText);
+    const formatted = formatAgentMessage(agent, answer.text);
+
+    console.log("Owner WhatsApp AI reply", {
+      agent,
+      model: answer.model,
+      chars: answer.text.length
+    });
 
     res.setHeader("Content-Type", "text/xml; charset=utf-8");
     return res.status(200).send(twimlMessage(formatted.body));
   } catch (error) {
-    console.error("Inbound AI route failed", error);
-    const formatted = formatAgentMessage(
-      agent,
-      "Recibí el mensaje, pero falló el runtime de respuesta. El comando quedó registrado para el agente. Probá de nuevo en unos segundos."
-    );
+    console.error("Inbound AI route failed", {
+      message: error?.message,
+      stage: error?.stage,
+      status: error?.status,
+      apiCode: error?.apiCode,
+      apiType: error?.apiType
+    });
+    const formatted = formatAgentMessage(agent, friendlyRuntimeError(error));
     res.setHeader("Content-Type", "text/xml; charset=utf-8");
     return res.status(200).send(twimlMessage(formatted.body));
   }
