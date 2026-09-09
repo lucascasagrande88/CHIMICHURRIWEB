@@ -1,6 +1,8 @@
+const crypto = require("crypto");
 const { formatAgentMessage } = require("../lib/agent-identities");
 
 const CONTEXT_URL = "https://sctchzxboqnphnzrxvvu.supabase.co/functions/v1/owner-whatsapp-context";
+const DEFAULT_WEBHOOK_URL = "https://chimichurriweb.vercel.app/api/whatsapp";
 
 const ROLE_GUIDANCE = {
   "0_BRAIN_CORE": "Sos BRAIN. Tu función es memoria canónica, coherencia, reglas y estado del sistema. Priorizá qué es verdad, qué cambió y qué conviene canonizar.",
@@ -36,6 +38,46 @@ function normalizeWA(v) {
   const s = String(v || "").trim();
   if (!s) return "";
   return s.startsWith("whatsapp:") ? s : `whatsapp:${s}`;
+}
+
+function safeEqual(a, b) {
+  const aa = Buffer.from(String(a || ""));
+  const bb = Buffer.from(String(b || ""));
+  if (aa.length !== bb.length) return false;
+  return crypto.timingSafeEqual(aa, bb);
+}
+
+function bodyParams(body) {
+  if (!body) return {};
+  if (typeof body === "object") return body;
+  if (typeof body === "string") return Object.fromEntries(new URLSearchParams(body));
+  return {};
+}
+
+function validateTwilioSignature(req) {
+  const authToken = process.env.TWILIO_AUTH_TOKEN || "";
+  const supplied = String(req.headers["x-twilio-signature"] || "");
+  if (!authToken || !supplied) return false;
+
+  const url = process.env.TWILIO_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+  const params = bodyParams(req.body);
+  let signed = url;
+
+  for (const key of Object.keys(params).sort()) {
+    const value = params[key];
+    if (Array.isArray(value)) {
+      for (const item of value) signed += `${key}${item ?? ""}`;
+    } else {
+      signed += `${key}${value ?? ""}`;
+    }
+  }
+
+  const expected = crypto
+    .createHmac("sha1", authToken)
+    .update(signed)
+    .digest("base64");
+
+  return safeEqual(expected, supplied);
 }
 
 function routeAgent(text) {
@@ -209,6 +251,10 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).send("Method not allowed");
+  }
+
+  if (!validateTwilioSignature(req)) {
+    return res.status(403).send("Forbidden");
   }
 
   const body = String(getField(req.body, "Body") || "").trim();
