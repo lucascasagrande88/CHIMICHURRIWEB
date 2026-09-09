@@ -1,6 +1,8 @@
 const crypto = require("crypto");
 const { resolveAgentIdentity, formatAgentMessage } = require("../lib/agent-identities");
 
+const CONTEXT_URL = "https://sctchzxboqnphnzrxvvu.supabase.co/functions/v1/owner-whatsapp-context";
+
 const AGENT_TOKEN_HASHES = {
   "0_ORCHESTRATOR_CORE": "5dfa9afe3f3b2d2fc977aa423c52fac4c2a1c9d4715bed694cc07b0320ceb4d6",
   "1_JOB_HUNTER": "b5b9d65bf64373d35b829666ff3d829800bc4c74c8af1871155eb38e59f5b73e",
@@ -84,6 +86,30 @@ function authorize(req) {
   };
 }
 
+async function recordOutbound({ token, agent, message, twilioMessageSid }) {
+  if (!token) return false;
+  try {
+    const response = await fetch(CONTEXT_URL, {
+      method: "POST",
+      signal: AbortSignal.timeout(5000),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CHIMI-TOKEN": token
+      },
+      body: JSON.stringify({
+        action: "record_outbound",
+        agent_key: agent,
+        message,
+        twilio_message_sid: twilioMessageSid || null
+      })
+    });
+    return response.ok;
+  } catch (error) {
+    console.error("Failed to record proactive WhatsApp outbound", error);
+    return false;
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -99,7 +125,8 @@ module.exports = async function handler(req, res) {
     TWILIO_ACCOUNT_SID,
     TWILIO_AUTH_TOKEN,
     TWILIO_WHATSAPP_FROM,
-    CHIMI_WHATSAPP_TO
+    CHIMI_WHATSAPP_TO,
+    CHIMI_BRIDGE_TOKEN
   } = process.env;
 
   const missing = [
@@ -167,6 +194,13 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    const ledgerRecorded = await recordOutbound({
+      token: CHIMI_BRIDGE_TOKEN,
+      agent: formatted.identity.key,
+      message,
+      twilioMessageSid: data.sid
+    });
+
     return res.status(200).json({
       ok: true,
       sid: data.sid,
@@ -175,7 +209,8 @@ module.exports = async function handler(req, res) {
       agent: formatted.identity.key,
       display: `${formatted.identity.color} ${formatted.identity.emoji} ${formatted.identity.name}`,
       auth_mode: authorization.authMode,
-      runtime_agent: authorization.runtimeAgent || null
+      runtime_agent: authorization.runtimeAgent || null,
+      ledger_recorded: ledgerRecorded
     });
   } catch (error) {
     console.error("Outbound bridge failure", error);
