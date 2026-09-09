@@ -22,14 +22,16 @@ module.exports = async function handler(req, res) {
     ok: transportOk,
     ai_ready: transportOk && aiOk,
     service: "CHIMI WhatsApp Bridge",
-    version: "owner-agent-channel-v2",
+    version: "owner-agent-channel-v3",
     features: {
       canonical_agent_headers: true,
       agent_runtime_auth: true,
       delegated_agent_identities: true,
       inbound_agent_routing: true,
       openai_responses_runtime: aiOk,
-      supabase_live_context: true
+      supabase_live_context: true,
+      twilio_signature_validation: true,
+      proactive_outbound_ledger: true
     },
     env
   });
